@@ -11,11 +11,11 @@ export default function HomePage() {
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Transform Your Images with
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> AI Magic</span>
+              Professional AI Image Editing
+              <span className="bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent"> by NextEleven</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-              Perform diverse image edits using specialized LoRA adapters. Upload your images and describe your vision - watch AI bring it to life.
+              Powered by Qwen's cutting-edge AI models. Transform photos to anime, upscale images, transfer styles, and more with 7 specialized editing modes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -138,7 +138,8 @@ export default function HomePage() {
 
       <footer className="py-8 px-4 border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-6xl mx-auto text-center text-gray-600 dark:text-gray-400">
-          <p>&copy; 2026 AI Image Editor. All rights reserved.</p>
+          <p>&copy; 2026 NextEleven AI. All rights reserved.</p>
+          <p className="text-sm mt-2">Powered by Qwen Image Edit Models</p>
         </div>
       </footer>
     </div>
