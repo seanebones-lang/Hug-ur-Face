@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { prompt, image } = body;
+    const { prompt, image, loraAdapter } = body;
 
     if (!prompt || !image) {
       return NextResponse.json(
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           images: [image],  // Array of base64 images
           prompt: prompt,
-          lora_adapter: "Photo-to-Anime",  // Default style
+          lora_adapter: loraAdapter || "Photo-to-Anime",  // Use selected style
           seed: 0,
           randomize_seed: true,
           guidance_scale: 1.0,
