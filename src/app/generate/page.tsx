@@ -128,10 +128,10 @@ export default function GeneratePage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              AI Image Editor
+              Transform Any Image with the Most Advanced AI Image System in the World
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              Upload an image and describe your edits - our AI will transform it
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-4xl mx-auto">
+              From photo-to-anime transformations to 4K upscaling, lighting migration to pose control - perform any visual adjustment imaginable. What once required teams of professional artists and expensive software now happens in seconds. Upload your image, describe your vision, and watch breakthrough AI technology bring it to life.
             </p>
             <div className="mt-4">
               <span className="px-4 py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full font-semibold">
