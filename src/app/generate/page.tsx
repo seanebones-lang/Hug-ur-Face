@@ -9,48 +9,81 @@ import Link from "next/link";
 export default function GeneratePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [prompt, setPrompt] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [creditsRemaining, setCreditsRemaining] = useState<number | null>(
     session?.user?.imageCredits ?? null
   );
-  const [showEditor, setShowEditor] = useState(false);
+  const [loraAdapter, setLoraAdapter] = useState("Photo-to-Anime");
 
-  const handleStartGeneration = async () => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGenerate = async () => {
     if (!session) {
       router.push("/auth/signin");
       return;
     }
 
+    if (!imageFile || !prompt.trim()) {
+      setError("Please upload an image and enter a prompt");
+      return;
+    }
+
     setLoading(true);
     setError(null);
+    setGeneratedImage(null);
 
     try {
-      const response = await fetch("/api/start-generation", {
+      // Convert image to base64
+      const base64Image = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(imageFile);
+      });
+
+      const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          image: base64Image,
+          prompt: prompt.trim(),
+          loraAdapter: loraAdapter,
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || data.message || "Failed to start generation");
+        throw new Error(data.error || data.message || "Generation failed");
       }
 
+      setGeneratedImage(data.image);
       setCreditsRemaining(data.creditsRemaining);
 
       // Update session to reflect new credit count
       if (session?.user) {
         session.user.imageCredits = data.creditsRemaining;
       }
-
-      // Show the embedded editor
-      setShowEditor(true);
-      setLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
       setLoading(false);
     }
   };
@@ -87,40 +120,6 @@ export default function GeneratePage() {
     );
   }
 
-  // If editor is active, show fullscreen iframe
-  if (showEditor) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <div className="flex-grow flex flex-col">
-          <div className="bg-gray-100 dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-b border-gray-300 dark:border-gray-700">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setShowEditor(false)}
-                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                ← Back to Dashboard
-              </button>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {creditsRemaining} credits remaining
-              </span>
-            </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              Generate as many images as you want in this session
-            </span>
-          </div>
-          <iframe
-            src="https://bizbots-qwen-image-editor.hf.space"
-            className="flex-grow w-full border-0"
-            style={{ height: "calc(100vh - 140px)" }}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -131,8 +130,8 @@ export default function GeneratePage() {
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               AI Image Editor
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-              Each generation session costs 1 credit and gives you unlimited edits until you're done
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Upload an image and describe your edits - our AI will transform it
             </p>
             <div className="mt-4">
               <span className="px-4 py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full font-semibold">
@@ -153,18 +152,60 @@ export default function GeneratePage() {
 
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
             <div className="space-y-6">
-              {/* Info Box */}
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">
-                  How it works:
-                </h3>
-                <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800 dark:text-blue-300">
-                  <li>Click "Start Generation Session" to use 1 credit</li>
-                  <li>You'll be redirected to our AI Image Editor</li>
-                  <li>Upload images, create edits, and experiment freely</li>
-                  <li>Generate as many images as you want in this session</li>
-                  <li>When done, close the editor or navigate back here</li>
-                </ol>
+              {/* Image Upload */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Upload Base Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="block w-full text-sm text-gray-900 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-200"
+                />
+                {imagePreview && (
+                  <div className="mt-4">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="max-w-full h-auto rounded-lg border border-gray-300 dark:border-gray-600"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Prompt Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Describe Your Edit
+                </label>
+                <textarea
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="e.g., Add a sunset background, make it look vintage, change the colors to blue..."
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+
+              {/* Style Selector */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Style
+                </label>
+                <select
+                  value={loraAdapter}
+                  onChange={(e) => setLoraAdapter(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                >
+                  <option value="Photo-to-Anime">Photo to Anime</option>
+                  <option value="Upscaler">Upscaler</option>
+                  <option value="Style-Transfer">Style Transfer</option>
+                  <option value="Manga-Tone">Manga Tone</option>
+                  <option value="Multiple-Angles">Multiple Angles</option>
+                  <option value="Any-Pose">Any Pose</option>
+                  <option value="Light-Migration">Light Migration</option>
+                </select>
               </div>
 
               {/* Error Message */}
@@ -176,50 +217,35 @@ export default function GeneratePage() {
                 </div>
               )}
 
-              {/* Start Generation Button */}
+              {/* Generate Button */}
               <button
-                onClick={handleStartGeneration}
-                disabled={loading || (session.user?.imageCredits === 0 && creditsRemaining === 0)}
-                className="w-full py-4 px-6 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                onClick={handleGenerate}
+                disabled={loading || !imageFile || !prompt.trim() || (session.user?.imageCredits === 0 && creditsRemaining === 0)}
+                className="w-full py-3 px-6 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? "Starting Session..." : "Start Generation Session (1 credit)"}
+                {loading ? "Generating..." : "Generate Image (1 credit)"}
               </button>
 
-              {/* Features */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                    7 Style Options
-                  </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Photo-to-Anime, Upscaler, Style Transfer, Manga Tone, and more
-                  </p>
+              {/* Generated Image */}
+              {generatedImage && (
+                <div className="mt-8">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Generated Image
+                  </h3>
+                  <img
+                    src={generatedImage}
+                    alt="Generated"
+                    className="max-w-full h-auto rounded-lg border border-gray-300 dark:border-gray-600"
+                  />
+                  <a
+                    href={generatedImage}
+                    download="generated-image.png"
+                    className="mt-4 inline-block px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    Download Image
+                  </a>
                 </div>
-                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                    Powered by Qwen
-                  </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    State-of-the-art AI image editing with 70GB VRAM
-                  </p>
-                </div>
-                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                    Unlimited Edits
-                  </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    One credit per session - generate as many variations as you need
-                  </p>
-                </div>
-                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                    Fast Processing
-                  </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    High-priority GPU access with PRO tier performance
-                  </p>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
