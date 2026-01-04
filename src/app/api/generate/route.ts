@@ -12,8 +12,19 @@ export async function POST(request: Request) {
   try {
     const session = await auth();
 
+    console.log("Session check:", {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      hasUserId: !!session?.user?.id,
+      userId: session?.user?.id
+    });
+
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      console.error("Unauthorized: No session or user ID");
+      return NextResponse.json({
+        error: "Unauthorized",
+        details: "Please sign in to generate images"
+      }, { status: 401 });
     }
 
     // Get user's current credits

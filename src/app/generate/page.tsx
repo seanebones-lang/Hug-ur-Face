@@ -60,6 +60,7 @@ export default function GeneratePage() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Ensure cookies are sent
         body: JSON.stringify({
           image: base64Image,
           prompt: prompt.trim(),
@@ -70,6 +71,12 @@ export default function GeneratePage() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401) {
+          // Session expired or not authenticated
+          setError("Session expired. Please sign in again.");
+          setTimeout(() => router.push("/auth/signin"), 2000);
+          return;
+        }
         throw new Error(data.error || data.message || "Generation failed");
       }
 
