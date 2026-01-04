@@ -56,19 +56,20 @@ export async function POST(request: Request) {
     });
 
     try {
-      // Call HuggingFace Gradio Space API
-      // Format: POST /gradio_api/call/predict with data array
-      const response = await fetch(`${HF_API_URL}/gradio_api/call/predict`, {
+      // Call HuggingFace Space /infer endpoint
+      const response = await fetch(`${HF_API_URL}/infer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data: [
-            image,      // Base64 image
-            prompt,     // Edit prompt
-            "Photo-to-Anime"  // Default style - can be made configurable
-          ],
+          images: [image],  // Array of base64 images
+          prompt: prompt,
+          lora_adapter: "Photo-to-Anime",  // Default style
+          seed: 0,
+          randomize_seed: true,
+          guidance_scale: 1.0,
+          steps: 4,
         }),
       });
 
@@ -83,56 +84,13 @@ export async function POST(request: Request) {
           },
         });
 
-        throw new Error(`HF Space API error: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`HF Space API error: ${response.statusText} - ${errorText}`);
       }
 
-      const callResult = await response.json();
-      const eventId = callResult.event_id;
+      const resultData = await response.json();
 
-      // Poll for result using the event_id
-      const statusResponse = await fetch(
-        `${HF_API_URL}/gradio_api/call/predict/${eventId}`,
-        {
-          method: "GET",
-          headers: {
-            "Accept": "text/event-stream",
-          },
-        }
-      );
-
-      if (!statusResponse.ok) {
-        // Refund credit if polling fails
-        await db.user.update({
-          where: { id: session.user.id },
-          data: {
-            imageCredits: {
-              increment: 1,
-            },
-          },
-        });
-
-        throw new Error(`Failed to get result: ${statusResponse.statusText}`);
-      }
-
-      // Parse the SSE stream to get the final result
-      const text = await statusResponse.text();
-      const lines = text.split('\n');
-      let resultData = null;
-
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          try {
-            const data = JSON.parse(line.substring(6));
-            if (data.output) {
-              resultData = data.output;
-            }
-          } catch {
-            // Skip invalid JSON lines
-          }
-        }
-      }
-
-      if (!resultData || !resultData.data || !resultData.data[0]) {
+      if (!resultData || !resultData[0]) {
         // Refund credit if no valid result
         await db.user.update({
           where: { id: session.user.id },
@@ -162,7 +120,7 @@ export async function POST(request: Request) {
 
       return NextResponse.json({
         success: true,
-        image: resultData.data[0],
+        image: resultData[0],  // First element is the generated image
         creditsRemaining: updatedUser.imageCredits,
       });
     } catch (error) {
