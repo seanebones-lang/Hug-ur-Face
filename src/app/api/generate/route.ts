@@ -4,18 +4,18 @@ import { db } from "@/lib/db";
 
 const HF_TOKEN = process.env.HF_TOKEN;
 
-// Use image-to-image model via Inference API
-const HF_INFERENCE_API = "https://api-inference.huggingface.co/models/timbrooks/instruct-pix2pix";
+// Use FLUX.1-dev for image-to-image via HuggingFace Inference Providers (fal.ai)
+const HF_INFERENCE_API = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-dev";
 
-// Map our LoRA adapter names to instruction prompts
+// Map our LoRA adapter names to instruction prompts for FLUX
 const STYLE_PROMPTS: Record<string, string> = {
-  "Photo-to-Anime": "turn this photo into anime art style",
-  "Upscaler": "enhance resolution and add fine details",
-  "Style-Transfer": "apply artistic painting style",
-  "Manga-Tone": "convert to black and white manga comic art",
-  "Multiple-Angles": "show from different viewing angle",
-  "Any-Pose": "change the pose",
-  "Light-Migration": "improve the lighting and add dramatic lighting effects",
+  "Photo-to-Anime": "convert to anime art style with clean lines and vibrant colors",
+  "Upscaler": "enhance image quality, add fine details, improve sharpness",
+  "Style-Transfer": "apply artistic painting style with brushstrokes",
+  "Manga-Tone": "convert to black and white manga comic art with screen tones",
+  "Multiple-Angles": "show subject from a different viewing angle",
+  "Any-Pose": "change the pose and body position",
+  "Light-Migration": "improve lighting with dramatic cinematic effects",
 };
 
 export async function POST(request: Request) {
@@ -69,15 +69,15 @@ export async function POST(request: Request) {
     });
 
     try {
-      // Convert base64 to buffer
+      // Convert base64 to pure base64 string (remove data URI prefix)
       const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
-      const imageBuffer = Buffer.from(base64Data, "base64");
 
       // Get style-specific prompt enhancement
       const stylePrompt = STYLE_PROMPTS[loraAdapter] || "";
       const fullPrompt = `${stylePrompt}. ${prompt}`.trim();
 
-      // Call HuggingFace Inference API with image data
+      // Call HuggingFace Inference API for image-to-image
+      // Format: https://huggingface.co/docs/inference-providers/tasks/image-to-image
       const response = await fetch(HF_INFERENCE_API, {
         method: "POST",
         headers: {
@@ -85,13 +85,11 @@ export async function POST(request: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          inputs: {
-            image: base64Data,
-            prompt: fullPrompt,
-          },
+          inputs: base64Data,  // Base64 image data (no data URI prefix)
           parameters: {
-            num_inference_steps: 20,
-            guidance_scale: 7.5,
+            prompt: fullPrompt,
+            num_inference_steps: 28,  // Default for FLUX models
+            guidance_scale: 3.5,       // Default for FLUX models
           }
         }),
       });
