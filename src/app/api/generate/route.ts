@@ -56,24 +56,26 @@ export async function POST(request: Request) {
     });
 
     try {
-      // Call HuggingFace Space /infer endpoint
-      const response = await fetch(`${HF_API_URL}/infer`, {
+      // Step 1: Submit job to Gradio API and get event ID
+      const submitResponse = await fetch(`${HF_API_URL}/gradio_api/call/infer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          images: [image],  // Array of base64 images
-          prompt: prompt,
-          lora_adapter: loraAdapter || "Photo-to-Anime",  // Use selected style
-          seed: 0,
-          randomize_seed: true,
-          guidance_scale: 1.0,
-          steps: 4,
+          data: [
+            [image],  // images array
+            prompt,  // prompt string
+            loraAdapter || "Photo-to-Anime",  // lora_adapter
+            0,  // seed
+            true,  // randomize_seed
+            1.0,  // guidance_scale
+            4,  // steps
+          ],
         }),
       });
 
-      if (!response.ok) {
+      if (!submitResponse.ok) {
         // Refund credit if API call fails
         await db.user.update({
           where: { id: session.user.id },
@@ -84,11 +86,60 @@ export async function POST(request: Request) {
           },
         });
 
-        const errorText = await response.text();
-        throw new Error(`HF Space API error: ${response.statusText} - ${errorText}`);
+        const errorText = await submitResponse.text();
+        throw new Error(`HF Space API error: ${submitResponse.statusText} - ${errorText}`);
       }
 
-      const resultData = await response.json();
+      const { event_id } = await submitResponse.json();
+
+      if (!event_id) {
+        // Refund credit if no event ID
+        await db.user.update({
+          where: { id: session.user.id },
+          data: {
+            imageCredits: {
+              increment: 1,
+            },
+          },
+        });
+
+        throw new Error("No event ID returned from API");
+      }
+
+      // Step 2: Poll for result using SSE
+      const sseResponse = await fetch(`${HF_API_URL}/gradio_api/call/infer/${event_id}`);
+
+      if (!sseResponse.ok) {
+        // Refund credit if SSE fails
+        await db.user.update({
+          where: { id: session.user.id },
+          data: {
+            imageCredits: {
+              increment: 1,
+            },
+          },
+        });
+
+        throw new Error(`Failed to get result: ${sseResponse.statusText}`);
+      }
+
+      // Parse SSE stream
+      const text = await sseResponse.text();
+      const lines = text.split('\n');
+
+      let resultData: any = null;
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.substring(6));
+            if (data && Array.isArray(data) && data.length > 0) {
+              resultData = data;
+            }
+          } catch (e) {
+            // Skip invalid JSON lines
+          }
+        }
+      }
 
       if (!resultData || !resultData[0]) {
         // Refund credit if no valid result
