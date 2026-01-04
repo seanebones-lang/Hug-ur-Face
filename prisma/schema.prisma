@@ -49,6 +49,8 @@ model User {
   imageCredits     Int         @default(3)
   totalPurchased   Int         @default(0)
   password         String?
+  resetToken       String?
+  resetTokenExpiry DateTime?
   accessLogs       AccessLog[]
   accounts         Account[]
   sessions         Session[]
