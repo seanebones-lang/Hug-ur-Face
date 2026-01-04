@@ -10,9 +10,7 @@ interface PricingCardProps {
   priceId: string | null;
   features: string[];
   planKey: string;
-  isCurrentPlan?: boolean;
   credits?: number;
-  pricePerImage?: number;
   popular?: boolean;
 }
 
@@ -22,9 +20,7 @@ export function PricingCard({
   price,
   features,
   planKey,
-  isCurrentPlan,
   credits,
-  pricePerImage,
   popular,
 }: PricingCardProps) {
   const { data: session } = useSession();

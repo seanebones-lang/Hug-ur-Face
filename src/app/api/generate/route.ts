@@ -126,7 +126,7 @@ export async function POST(request: Request) {
             if (data.output) {
               resultData = data.output;
             }
-          } catch (e) {
+          } catch {
             // Skip invalid JSON lines
           }
         }
