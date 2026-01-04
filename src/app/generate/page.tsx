@@ -9,79 +9,44 @@ import Link from "next/link";
 export default function GeneratePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [prompt, setPrompt] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [creditsRemaining, setCreditsRemaining] = useState<number | null>(
     session?.user?.imageCredits ?? null
   );
-  const [loraAdapter, setLoraAdapter] = useState("Photo-to-Anime");
+  const [canUseSpace, setCanUseSpace] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleGenerate = async () => {
+  const handleUnlockGenerator = async () => {
     if (!session) {
       router.push("/auth/signin");
       return;
     }
 
-    if (!imageFile || !prompt.trim()) {
-      setError("Please upload an image and enter a prompt");
-      return;
-    }
-
     setLoading(true);
     setError(null);
-    setGeneratedImage(null);
 
     try {
-      const base64Image = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(imageFile);
-      });
-
-      const response = await fetch("/api/generate", {
+      const response = await fetch("/api/start-generation", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // Ensure cookies are sent
-        body: JSON.stringify({
-          image: base64Image,
-          prompt: prompt.trim(),
-          loraAdapter: loraAdapter,
-        }),
+        credentials: "include",
       });
 
       const data = await response.json();
 
       if (!response.ok) {
         if (response.status === 401) {
-          // Session expired or not authenticated
-          setError("Session expired. Please sign in again.");
+          setError("Please sign in to continue");
           setTimeout(() => router.push("/auth/signin"), 2000);
           return;
         }
-        throw new Error(data.error || data.message || "Generation failed");
+        throw new Error(data.error || data.message || "Failed to unlock");
       }
 
-      setGeneratedImage(data.image);
       setCreditsRemaining(data.creditsRemaining);
+      setCanUseSpace(true);
 
       if (session?.user) {
         session.user.imageCredits = data.creditsRemaining;
@@ -145,113 +110,76 @@ export default function GeneratePage() {
             </div>
           </div>
 
-          {/* NextEleven AI Image Editor - White Labeled */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
-            <div className="mb-6 text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full">
+          {/* Credit-Gated White-Labeled Space */}
+          {!canUseSpace ? (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center">
+              <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full">
                 <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Powered by NextEleven AI
                 </span>
               </div>
-            </div>
 
-            <div className="space-y-6">
-              {/* Image Upload */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Upload Base Image
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="block w-full text-sm text-gray-900 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-blue-50 file:to-purple-50 file:text-blue-700 hover:file:from-blue-100 hover:file:to-purple-100 dark:file:from-blue-900 dark:file:to-purple-900 dark:file:text-blue-200"
-                />
-                {imagePreview && (
-                  <div className="mt-4">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="max-w-full h-auto rounded-lg border border-gray-300 dark:border-gray-600"
-                    />
-                  </div>
-                )}
-              </div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Professional AI Image Editor
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto text-lg">
+                Transform any image with 7 professional AI styles: Photo-to-Anime, 4K Upscaler, Style Transfer, Manga Tone, Multiple Angles, Pose Control, and Lighting Effects.
+              </p>
 
-              {/* Prompt Input */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Describe Your Edit
-                </label>
-                <textarea
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="e.g., Transform into anime style, add dramatic lighting, make it look professional..."
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                />
-              </div>
-
-              {/* Style Selector */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  AI Style
-                </label>
-                <select
-                  value={loraAdapter}
-                  onChange={(e) => setLoraAdapter(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                >
-                  <option value="Photo-to-Anime">Photo to Anime</option>
-                  <option value="Upscaler">4K Upscaler</option>
-                  <option value="Style-Transfer">Style Transfer</option>
-                  <option value="Manga-Tone">Manga Tone</option>
-                  <option value="Multiple-Angles">Multiple Angles</option>
-                  <option value="Any-Pose">Pose Control</option>
-                  <option value="Light-Migration">Lighting Control</option>
-                </select>
-              </div>
-
-              {/* Error Message */}
               {error && (
-                <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                  <p className="text-sm text-red-800 dark:text-red-200">
-                    {error}
-                  </p>
+                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg max-w-md mx-auto">
+                  <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
                 </div>
               )}
 
-              {/* Generate Button */}
               <button
-                onClick={handleGenerate}
-                disabled={loading || !imageFile || !prompt.trim() || (session.user?.imageCredits === 0 && creditsRemaining === 0)}
-                className="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
+                onClick={handleUnlockGenerator}
+                disabled={loading || (session.user?.imageCredits === 0 && creditsRemaining === 0)}
+                className="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-bold rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 shadow-2xl"
               >
-                {loading ? "Generating with NextEleven AI..." : "Generate Image (1 credit)"}
+                {loading ? "Unlocking..." : "🚀 Start Creating (1 Credit)"}
               </button>
 
-              {/* Generated Image */}
-              {generatedImage && (
-                <div className="mt-8">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    Generated by NextEleven AI
-                  </h3>
-                  <img
-                    src={generatedImage}
-                    alt="Generated"
-                    className="max-w-full h-auto rounded-lg border border-gray-300 dark:border-gray-600"
-                  />
-                  <a
-                    href={generatedImage}
-                    download="nexteleven-ai-image.png"
-                    className="mt-4 inline-block px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-colors shadow-md"
+              <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
+                Once unlocked, create unlimited images during this session
+              </p>
+
+              {(creditsRemaining === 0 || session.user?.imageCredits === 0) && (
+                <div className="mt-6">
+                  <Link
+                    href="/pricing"
+                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline font-semibold"
                   >
-                    Download Image
-                  </a>
+                    Purchase Credits →
+                  </Link>
                 </div>
               )}
             </div>
-          </div>
+          ) : (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+              <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <span className="text-white font-semibold text-lg">NextEleven AI Image Editor</span>
+                  <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm font-semibold">
+                    ✓ Active
+                  </span>
+                </div>
+                <span className="text-white text-sm">
+                  {creditsRemaining} credits remaining
+                </span>
+              </div>
+              <iframe
+                src="https://bizbots-qwen-image-editor.hf.space"
+                frameBorder="0"
+                width="100%"
+                height="1000"
+                className="w-full"
+              ></iframe>
+              <div className="px-6 py-3 bg-gray-50 dark:bg-gray-900 text-center text-sm text-gray-600 dark:text-gray-400">
+                Generate unlimited images • All styles included
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
