@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Account {
@@ -48,16 +49,10 @@ model User {
 
   // Stripe fields
   stripeCustomerId     String?   @unique
-  stripeSubscriptionId String?   @unique
-  stripePriceId        String?
-  stripeCurrentPeriodEnd DateTime?
 
-  // Subscription tier
-  subscriptionTier SubscriptionTier @default(FREE)
-
-  // Usage tracking
-  usageCount    Int      @default(0)
-  usageResetAt  DateTime @default(now())
+  // Credit-based system for images
+  imageCredits  Int      @default(3)  // Start with 3 free credits
+  totalPurchased Int     @default(0)  // Track total credits purchased
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -82,14 +77,20 @@ model AccessLog {
   spaceId   String?
   timestamp DateTime @default(now())
   metadata  Json?
+  creditsUsed Int    @default(1)  // Track credits used per generation
 
   @@index([userId])
   @@index([timestamp])
 }
 
-enum SubscriptionTier {
-  FREE
-  BASIC
-  PRO
-  ENTERPRISE
+model Purchase {
+  id              String   @id @default(cuid())
+  userId          String
+  stripePaymentId String   @unique
+  bundleType      String   // 'single', 'starter', 'creator', 'professional'
+  creditsAdded    Int
+  amountPaid      Float
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
 }

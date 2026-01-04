@@ -5,82 +5,87 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   typescript: true,
 });
 
-// Subscription tier pricing
-export const PLANS = {
-  FREE: {
-    name: "Free",
-    description: "Basic access with limited usage",
-    price: 0,
-    priceId: null,
+// Credit bundle pricing for pay-per-image model
+export const BUNDLES = {
+  SINGLE: {
+    id: "single",
+    name: "Single Image",
+    description: "Pay as you go",
+    price: 0.50,
+    priceId: process.env.STRIPE_SINGLE_IMAGE_PRICE_ID,
+    credits: 1,
+    pricePerImage: 0.50,
     features: [
-      "5 API calls per day",
-      "Basic model access",
-      "Community support",
+      "1 high-res image generation",
+      "Full quality output",
+      "No commitment",
     ],
-    limits: {
-      dailyCalls: 5,
-      maxResolution: "512x512",
-    },
   },
-  BASIC: {
-    name: "Basic",
-    description: "For hobbyists and small projects",
-    price: 9.99,
-    priceId: process.env.STRIPE_BASIC_PRICE_ID,
+  STARTER: {
+    id: "starter",
+    name: "Starter Bundle",
+    description: "Best for trying out",
+    price: 19.99,
+    priceId: process.env.STRIPE_STARTER_BUNDLE_PRICE_ID,
+    credits: 50,
+    pricePerImage: 0.40,
     features: [
-      "100 API calls per day",
-      "Standard model access",
-      "Email support",
-      "Higher resolution outputs",
+      "50 high-res image generations",
+      "$0.40 per image (20% savings)",
+      "Credits never expire",
+      "Full quality output",
     ],
-    limits: {
-      dailyCalls: 100,
-      maxResolution: "1024x1024",
-    },
+    popular: false,
   },
-  PRO: {
-    name: "Pro",
-    description: "For professionals and teams",
-    price: 29.99,
-    priceId: process.env.STRIPE_PRO_PRICE_ID,
+  CREATOR: {
+    id: "creator",
+    name: "Creator Bundle",
+    description: "Most popular choice",
+    price: 49.99,
+    priceId: process.env.STRIPE_CREATOR_BUNDLE_PRICE_ID,
+    credits: 150,
+    pricePerImage: 0.33,
     features: [
-      "Unlimited API calls",
-      "Premium model access",
-      "Priority support",
-      "Maximum resolution outputs",
-      "API access",
+      "150 high-res image generations",
+      "$0.33 per image (34% savings)",
+      "Credits never expire",
+      "Full quality output",
+      "Priority processing",
     ],
-    limits: {
-      dailyCalls: -1, // unlimited
-      maxResolution: "2048x2048",
-    },
+    popular: true,
   },
-  ENTERPRISE: {
-    name: "Enterprise",
-    description: "Custom solutions for large organizations",
-    price: null, // Contact sales
-    priceId: process.env.STRIPE_ENTERPRISE_PRICE_ID,
+  PROFESSIONAL: {
+    id: "professional",
+    name: "Professional Bundle",
+    description: "Best value for power users",
+    price: 99.99,
+    priceId: process.env.STRIPE_PROFESSIONAL_BUNDLE_PRICE_ID,
+    credits: 350,
+    pricePerImage: 0.29,
     features: [
-      "Everything in Pro",
-      "Dedicated support",
-      "Custom integrations",
-      "SLA guarantee",
-      "On-premise options",
+      "350 high-res image generations",
+      "$0.29 per image (42% savings)",
+      "Credits never expire",
+      "Full quality output",
+      "Priority processing",
+      "Bulk generation support",
     ],
-    limits: {
-      dailyCalls: -1,
-      maxResolution: "4096x4096",
-    },
+    popular: false,
   },
 } as const;
 
-export type PlanKey = keyof typeof PLANS;
+export type BundleKey = keyof typeof BUNDLES;
 
-export function getPlanByPriceId(priceId: string): PlanKey | null {
-  for (const [key, plan] of Object.entries(PLANS)) {
-    if (plan.priceId === priceId) {
-      return key as PlanKey;
+export function getBundleByPriceId(priceId: string): BundleKey | null {
+  for (const [key, bundle] of Object.entries(BUNDLES)) {
+    if (bundle.priceId === priceId) {
+      return key as BundleKey;
     }
   }
   return null;
+}
+
+export function getCreditsByPriceId(priceId: string): number {
+  const bundle = Object.values(BUNDLES).find(b => b.priceId === priceId);
+  return bundle?.credits ?? 0;
 }

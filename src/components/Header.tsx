@@ -11,30 +11,24 @@ export function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center gap-8">
-            <Link href="/" className="text-xl font-bold">
-              HF Monetizer
+            <Link href="/" className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              AI Image Editor
             </Link>
             <div className="hidden md:flex items-center gap-6">
+              {session && (
+                <Link
+                  href="/generate"
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 font-semibold"
+                >
+                  Edit Images
+                </Link>
+              )}
               <Link
                 href="/pricing"
                 className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
               >
                 Pricing
               </Link>
-              <Link
-                href="/spaces"
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-              >
-                Spaces
-              </Link>
-              {session && (
-                <Link
-                  href="/dashboard"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                >
-                  Dashboard
-                </Link>
-              )}
             </div>
           </div>
 
@@ -46,8 +40,8 @@ export function Header() {
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   {session.user?.email}
                 </span>
-                <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded">
-                  {session.user?.subscriptionTier}
+                <span className="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">
+                  {session.user?.imageCredits || 0} credits
                 </span>
                 <button
                   onClick={() => signOut()}

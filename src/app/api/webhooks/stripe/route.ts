@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { stripe, getPlanByPriceId } from "@/lib/stripe";
+import { stripe, getCreditsByPriceId } from "@/lib/stripe";
 import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
@@ -37,32 +37,10 @@ export async function POST(request: Request) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        await handleCheckoutCompleted(session);
-        break;
-      }
-
-      case "customer.subscription.created":
-      case "customer.subscription.updated": {
-        const subscription = event.data.object as Stripe.Subscription;
-        await handleSubscriptionChange(subscription);
-        break;
-      }
-
-      case "customer.subscription.deleted": {
-        const subscription = event.data.object as Stripe.Subscription;
-        await handleSubscriptionDeleted(subscription);
-        break;
-      }
-
-      case "invoice.payment_succeeded": {
-        const invoice = event.data.object as Stripe.Invoice;
-        await handleInvoicePaymentSucceeded(invoice);
-        break;
-      }
-
-      case "invoice.payment_failed": {
-        const invoice = event.data.object as Stripe.Invoice;
-        await handleInvoicePaymentFailed(invoice);
+        // Only process payment mode (one-time purchases), not subscriptions
+        if (session.mode === "payment") {
+          await handlePaymentCompleted(session);
+        }
         break;
       }
 
@@ -80,116 +58,43 @@ export async function POST(request: Request) {
   }
 }
 
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+async function handlePaymentCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId;
-  const customerId = session.customer as string;
-  const subscriptionId = session.subscription as string;
+  const bundleType = session.metadata?.bundleType;
+  const creditsStr = session.metadata?.credits;
 
-  if (!userId) {
-    console.error("No userId in session metadata");
+  if (!userId || !bundleType || !creditsStr) {
+    console.error("Missing metadata in session", session.metadata);
     return;
   }
 
-  // Fetch the subscription to get the price ID
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  const priceId = subscription.items.data[0]?.price.id;
-  const tier = getPlanByPriceId(priceId) ?? "FREE";
+  const credits = parseInt(creditsStr);
+  const amountPaid = (session.amount_total ?? 0) / 100; // Convert cents to dollars
 
-  await db.user.update({
+  // Add credits to user
+  const user = await db.user.update({
     where: { id: userId },
     data: {
-      stripeCustomerId: customerId,
-      stripeSubscriptionId: subscriptionId,
-      stripePriceId: priceId,
-      stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
-      subscriptionTier: tier,
+      imageCredits: {
+        increment: credits,
+      },
+      totalPurchased: {
+        increment: credits,
+      },
+      stripeCustomerId: session.customer as string,
     },
   });
 
-  console.log(`User ${userId} subscribed to ${tier}`);
-}
-
-async function handleSubscriptionChange(subscription: Stripe.Subscription) {
-  const customerId = subscription.customer as string;
-  const priceId = subscription.items.data[0]?.price.id;
-  const tier = getPlanByPriceId(priceId) ?? "FREE";
-
-  const user = await db.user.findFirst({
-    where: { stripeCustomerId: customerId },
-  });
-
-  if (!user) {
-    console.error(`No user found with customer ID: ${customerId}`);
-    return;
-  }
-
-  await db.user.update({
-    where: { id: user.id },
+  // Record the purchase
+  await db.purchase.create({
     data: {
-      stripeSubscriptionId: subscription.id,
-      stripePriceId: priceId,
-      stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
-      subscriptionTier: subscription.status === "active" ? tier : "FREE",
-    },
-  });
-}
-
-async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
-  const customerId = subscription.customer as string;
-
-  const user = await db.user.findFirst({
-    where: { stripeCustomerId: customerId },
-  });
-
-  if (!user) {
-    console.error(`No user found with customer ID: ${customerId}`);
-    return;
-  }
-
-  await db.user.update({
-    where: { id: user.id },
-    data: {
-      stripeSubscriptionId: null,
-      stripePriceId: null,
-      stripeCurrentPeriodEnd: null,
-      subscriptionTier: "FREE",
+      userId,
+      stripePaymentId: session.payment_intent as string,
+      bundleType,
+      creditsAdded: credits,
+      amountPaid,
     },
   });
 
-  console.log(`User ${user.id} subscription cancelled`);
-}
-
-async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  const customerId = invoice.customer as string;
-  const subscriptionId = invoice.subscription as string;
-
-  if (!subscriptionId) return;
-
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-
-  const user = await db.user.findFirst({
-    where: { stripeCustomerId: customerId },
-  });
-
-  if (!user) return;
-
-  await db.user.update({
-    where: { id: user.id },
-    data: {
-      stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
-    },
-  });
-}
-
-async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  const customerId = invoice.customer as string;
-
-  const user = await db.user.findFirst({
-    where: { stripeCustomerId: customerId },
-  });
-
-  if (!user) return;
-
-  // You might want to send an email notification here
-  console.warn(`Payment failed for user ${user.id}`);
+  console.log(`User ${userId} purchased ${credits} credits (${bundleType} bundle). New balance: ${user.imageCredits}`);
 }

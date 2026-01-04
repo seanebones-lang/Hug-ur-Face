@@ -11,6 +11,9 @@ interface PricingCardProps {
   features: string[];
   planKey: string;
   isCurrentPlan?: boolean;
+  credits?: number;
+  pricePerImage?: number;
+  popular?: boolean;
 }
 
 export function PricingCard({
@@ -20,11 +23,14 @@ export function PricingCard({
   features,
   planKey,
   isCurrentPlan,
+  credits,
+  pricePerImage,
+  popular,
 }: PricingCardProps) {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
 
-  const handleSubscribe = async () => {
+  const handlePurchase = async () => {
     if (!session) {
       window.location.href = "/auth/signin";
       return;
@@ -35,7 +41,7 @@ export function PricingCard({
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planKey }),
+        body: JSON.stringify({ bundle: planKey }),
       });
 
       const data = await response.json();
@@ -52,16 +58,13 @@ export function PricingCard({
     }
   };
 
-  const isPro = planKey === "PRO";
-  const isEnterprise = price === null;
-
   return (
     <div
       className={`relative flex flex-col p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg ${
-        isPro ? "ring-2 ring-blue-500" : ""
+        popular ? "ring-2 ring-blue-500" : ""
       }`}
     >
-      {isPro && (
+      {popular && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
           <span className="px-3 py-1 text-xs font-semibold text-white bg-blue-500 rounded-full">
             Most Popular
@@ -79,17 +82,15 @@ export function PricingCard({
       </div>
 
       <div className="mb-6">
-        {isEnterprise ? (
-          <span className="text-4xl font-bold text-gray-900 dark:text-white">
-            Custom
-          </span>
-        ) : (
-          <>
-            <span className="text-4xl font-bold text-gray-900 dark:text-white">
-              ${price}
+        <span className="text-4xl font-bold text-gray-900 dark:text-white">
+          ${price}
+        </span>
+        {credits && (
+          <div className="mt-2">
+            <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+              {credits} {credits === 1 ? "credit" : "credits"}
             </span>
-            <span className="text-gray-500 dark:text-gray-400">/month</span>
-          </>
+          </div>
         )}
       </div>
 
@@ -116,40 +117,17 @@ export function PricingCard({
         ))}
       </ul>
 
-      {isCurrentPlan ? (
-        <button
-          disabled
-          className="w-full py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-lg font-medium cursor-not-allowed"
-        >
-          Current Plan
-        </button>
-      ) : isEnterprise ? (
-        <a
-          href="mailto:sales@example.com"
-          className="w-full py-3 px-4 text-center bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg font-medium hover:opacity-90 transition-opacity"
-        >
-          Contact Sales
-        </a>
-      ) : price === 0 ? (
-        <button
-          disabled
-          className="w-full py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg font-medium cursor-not-allowed"
-        >
-          Free Forever
-        </button>
-      ) : (
-        <button
-          onClick={handleSubscribe}
-          disabled={loading}
-          className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
-            isPro
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90"
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
-        >
-          {loading ? "Loading..." : "Subscribe"}
-        </button>
-      )}
+      <button
+        onClick={handlePurchase}
+        disabled={loading}
+        className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
+          popular
+            ? "bg-blue-600 text-white hover:bg-blue-700"
+            : "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90"
+        } disabled:opacity-50 disabled:cursor-not-allowed`}
+      >
+        {loading ? "Loading..." : "Buy Credits"}
+      </button>
     </div>
   );
 }

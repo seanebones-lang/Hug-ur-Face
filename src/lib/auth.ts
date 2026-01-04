@@ -7,10 +7,6 @@ import { db } from "./db";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db),
   providers: [
-    GitHub({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -21,22 +17,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.id = user.id;
 
-        // Fetch subscription info
+        // Fetch credit info
         const dbUser = await db.user.findUnique({
           where: { id: user.id },
           select: {
-            subscriptionTier: true,
-            stripeCurrentPeriodEnd: true,
-            usageCount: true,
-            usageResetAt: true,
+            imageCredits: true,
+            totalPurchased: true,
           },
         });
 
         if (dbUser) {
-          session.user.subscriptionTier = dbUser.subscriptionTier;
-          session.user.stripeCurrentPeriodEnd = dbUser.stripeCurrentPeriodEnd;
-          session.user.usageCount = dbUser.usageCount;
-          session.user.usageResetAt = dbUser.usageResetAt;
+          session.user.imageCredits = dbUser.imageCredits;
+          session.user.totalPurchased = dbUser.totalPurchased;
         }
       }
       return session;

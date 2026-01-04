@@ -11,26 +11,24 @@ export default function HomePage() {
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Monetize Your
-              <span className="text-blue-600"> HuggingFace </span>
-              Spaces
+              Transform Your Images with
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> AI Magic</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-              Add subscription-based access to your ML demos. Integrate secure
-              payments while maintaining your core functionality.
+              Perform diverse image edits using specialized LoRA adapters. Upload your images and describe your vision - watch AI bring it to life.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/pricing"
-                className="px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                href="/generate"
+                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity"
               >
-                View Pricing
+                Try It Free - 3 Credits
               </Link>
               <Link
-                href="/spaces"
+                href="/pricing"
                 className="px-8 py-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-semibold border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
               >
-                Explore Spaces
+                View Pricing
               </Link>
             </div>
           </div>
@@ -40,7 +38,7 @@ export default function HomePage() {
         <section className="py-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
-              Everything You Need
+              How It Works
             </h2>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -56,16 +54,15 @@ export default function HomePage() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Secure Access Control
+                  1. Upload Image
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Gate your premium features with authentication and
-                  subscription tiers. Control who can access what.
+                  Upload any image you want to edit or transform using our AI-powered tools.
                 </p>
               </div>
 
@@ -81,16 +78,15 @@ export default function HomePage() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                     />
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Stripe Integration
+                  2. Describe Edit
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Seamless payment processing with Stripe. Subscriptions,
-                  one-time payments, and billing portal included.
+                  Tell the AI what you want - change backgrounds, add effects, adjust styles, and more.
                 </p>
               </div>
 
@@ -106,16 +102,15 @@ export default function HomePage() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
                     />
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Usage Analytics
+                  3. Get Results
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Track API usage, monitor limits, and get insights into how
-                  users interact with your spaces.
+                  Download your AI-edited image in seconds. Each edit costs just 1 credit.
                 </p>
               </div>
             </div>
@@ -123,13 +118,13 @@ export default function HomePage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-blue-600">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-purple-600">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Ready to Monetize?
+              Start Editing with AI Today
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              Start offering premium access to your HuggingFace Spaces today.
+              Sign up now and get 3 free credits to try our AI image editor.
             </p>
             <Link
               href="/auth/signin"
@@ -143,7 +138,7 @@ export default function HomePage() {
 
       <footer className="py-8 px-4 border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-6xl mx-auto text-center text-gray-600 dark:text-gray-400">
-          <p>&copy; 2026 HF Space Monetizer. All rights reserved.</p>
+          <p>&copy; 2026 AI Image Editor. All rights reserved.</p>
         </div>
       </footer>
     </div>
