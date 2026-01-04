@@ -69,7 +69,7 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           data: [
-            [image], // images - array with base64 image
+            [{ path: image }], // images - array of objects with path/url
             prompt,   // prompt
             loraAdapter, // lora_adapter
             0, // seed
