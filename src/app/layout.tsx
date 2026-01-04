@@ -3,8 +3,8 @@ import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "HF Space Monetizer",
-  description: "Monetize your Hugging Face Space with subscription-based access",
+  title: "AI Image Editor",
+  description: "Transform your images with AI-powered editing using specialized LoRA adapters",
 };
 
 export default function RootLayout({
