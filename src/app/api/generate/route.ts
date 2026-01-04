@@ -7,7 +7,6 @@ const HF_SPACE_ID = process.env.HF_SPACE_ID || "bizbots/qwen-image-editor";
 
 // HuggingFace Space Gradio API endpoint
 const HF_SPACE_URL = `https://bizbots-qwen-image-editor.hf.space`;
-const HF_SPACE_API = `${HF_SPACE_URL}/gradio_api/call/infer`;
 
 export async function POST(request: Request) {
   try {
@@ -60,22 +59,24 @@ export async function POST(request: Request) {
     });
 
     try {
-      // Step 1: Initiate the Gradio API call
-      const callResponse = await fetch(HF_SPACE_API, {
+      // Step 1: Initiate the Gradio API call to /call/predict
+      const callResponse = await fetch(`${HF_SPACE_URL}/call/predict`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${HF_TOKEN}`,
           "Content-Type": "application/json",
+          ...(HF_TOKEN && { "Authorization": `Bearer ${HF_TOKEN}` })
         },
         body: JSON.stringify({
           data: [
-            [{ path: image }], // images - array of objects with path/url
+            [image], // images - array with base64 data URI
             prompt,   // prompt
             loraAdapter, // lora_adapter
-            0, // seed
+            42, // seed
             true, // randomize_seed
-            1.0, // guidance_scale
-            4  // steps (fast)
+            512, // width
+            512, // height
+            0.8, // guidance_scale
+            20  // num_inference_steps
           ]
         }),
       });
@@ -100,51 +101,49 @@ export async function POST(request: Request) {
       const eventId = callData.event_id;
 
       if (!eventId) {
-        throw new Error("No event_id received from Gradio API");
+        throw new Error("No event_id received from HuggingFace");
       }
 
-      // Step 2: Poll for the result using the event_id
-      const statusUrl = `${HF_SPACE_URL}/gradio_api/call/infer/${eventId}`;
-      let resultImage = null;
-      let attempts = 0;
-      const maxAttempts = 60; // 60 seconds timeout
-
-      while (attempts < maxAttempts && !resultImage) {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
-
-        const statusResponse = await fetch(statusUrl, {
-          headers: {
-            "Authorization": `Bearer ${HF_TOKEN}`,
-          },
-        });
-
-        if (statusResponse.ok) {
-          const text = await statusResponse.text();
-          const lines = text.split('\n').filter(line => line.trim());
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                if (data.msg === 'process_completed' && data.output?.data) {
-                  resultImage = data.output.data[0]; // First element is the output image
-                  break;
-                }
-              } catch (e) {
-                // Continue if JSON parse fails
-              }
-            }
-          }
+      // Step 2: Get results from /call/predict/{event_id}
+      const resultResponse = await fetch(`${HF_SPACE_URL}/call/predict/${eventId}`, {
+        headers: {
+          ...(HF_TOKEN && { "Authorization": `Bearer ${HF_TOKEN}` })
         }
+      });
 
-        attempts++;
+      if (!resultResponse.ok) {
+        const errorText = await resultResponse.text();
+        console.error("HF result fetch failed:", resultResponse.status, errorText);
+        throw new Error(`Failed to get results: ${resultResponse.statusText}`);
       }
 
-      if (!resultImage) {
-        throw new Error("Timeout waiting for image generation");
+      // Parse Server-Sent Events response
+      const resultText = await resultResponse.text();
+      const lines = resultText.split('\n');
+      let eventType = null;
+      let data = null;
+
+      for (const line of lines) {
+        if (line.startsWith('event:')) {
+          eventType = line.substring(6).trim();
+        } else if (line.startsWith('data:')) {
+          data = line.substring(5).trim();
+        }
       }
 
-      // Result is already in base64 format with data URI
+      if (eventType === 'error') {
+        console.error('HF returned error:', data);
+        throw new Error('HuggingFace processing error');
+      }
+
+      if (eventType !== 'complete' || !data) {
+        throw new Error('Unexpected response format from HuggingFace');
+      }
+
+      const result = JSON.parse(data);
+      const resultImage = result[0]; // First element is the output image
+
+      // Result should be in base64 format with data URI
       const resultBase64 = resultImage.startsWith("data:") ? resultImage : `data:image/png;base64,${resultImage}`;
 
       // Log the generation
