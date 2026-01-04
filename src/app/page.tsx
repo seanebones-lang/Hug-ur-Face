@@ -100,7 +100,7 @@ export default function HomePage() {
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
           <div className="max-w-6xl mx-auto text-center">
             <div className="inline-block px-4 py-2 bg-indigo-100 dark:bg-indigo-900 rounded-full text-indigo-700 dark:text-indigo-300 text-sm font-semibold mb-6">
-              Powered by Qwen AI • 9 Advanced Editing Modes
+              Proprietary AI Technology • 9 Advanced Editing Modes
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6">
               Professional AI Image Editing
@@ -499,7 +499,7 @@ export default function HomePage() {
       <footer className="py-8 px-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto text-center text-gray-600 dark:text-gray-400">
           <p className="text-lg font-semibold mb-2">&copy; 2026 NextEleven AI. All rights reserved.</p>
-          <p className="text-sm">Powered by Qwen Image Edit Models • 9 Advanced AI Editing Modes</p>
+          <p className="text-sm">Proprietary AI Technology • 9 Advanced AI Editing Modes</p>
         </div>
       </footer>
     </div>
