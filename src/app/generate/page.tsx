@@ -14,6 +14,7 @@ export default function GeneratePage() {
   const [creditsRemaining, setCreditsRemaining] = useState<number | null>(
     session?.user?.imageCredits ?? null
   );
+  const [showEditor, setShowEditor] = useState(false);
 
   const handleStartGeneration = async () => {
     if (!session) {
@@ -45,10 +46,8 @@ export default function GeneratePage() {
         session.user.imageCredits = data.creditsRemaining;
       }
 
-      // Redirect to HuggingFace Space
-      window.open(data.redirectUrl, "_blank");
-
-      // Show success message
+      // Show the embedded editor
+      setShowEditor(true);
       setLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -84,6 +83,40 @@ export default function GeneratePage() {
             </Link>
           </div>
         </main>
+      </div>
+    );
+  }
+
+  // If editor is active, show fullscreen iframe
+  if (showEditor) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-grow flex flex-col">
+          <div className="bg-gray-100 dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-b border-gray-300 dark:border-gray-700">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setShowEditor(false)}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                ← Back to Dashboard
+              </button>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {creditsRemaining} credits remaining
+              </span>
+            </div>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Generate as many images as you want in this session
+            </span>
+          </div>
+          <iframe
+            src="https://bizbots-qwen-image-editor.hf.space"
+            className="flex-grow w-full border-0"
+            style={{ height: "calc(100vh - 140px)" }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
       </div>
     );
   }
