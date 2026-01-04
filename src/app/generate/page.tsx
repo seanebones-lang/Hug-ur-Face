@@ -60,8 +60,11 @@ export default function GeneratePage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-600 dark:text-gray-400">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="mb-4 text-2xl">⚡</div>
+          <div className="text-gray-600 dark:text-gray-400 font-medium">Loading NextEleven AI...</div>
+        </div>
       </div>
     );
   }
