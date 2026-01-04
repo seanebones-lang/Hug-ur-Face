@@ -2,8 +2,21 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-const HF_SPACE_ID = process.env.HF_SPACE_ID || "bizbots/qwen-image-editor";
-const HF_API_URL = `https://${HF_SPACE_ID.replace("/", "-")}.hf.space`;
+const HF_TOKEN = process.env.HF_TOKEN;
+
+// Use image-to-image model via Inference API
+const HF_INFERENCE_API = "https://api-inference.huggingface.co/models/timbrooks/instruct-pix2pix";
+
+// Map our LoRA adapter names to instruction prompts
+const STYLE_PROMPTS: Record<string, string> = {
+  "Photo-to-Anime": "turn this photo into anime art style",
+  "Upscaler": "enhance resolution and add fine details",
+  "Style-Transfer": "apply artistic painting style",
+  "Manga-Tone": "convert to black and white manga comic art",
+  "Multiple-Angles": "show from different viewing angle",
+  "Any-Pose": "change the pose",
+  "Light-Migration": "improve the lighting and add dramatic lighting effects",
+};
 
 export async function POST(request: Request) {
   try {
@@ -56,26 +69,34 @@ export async function POST(request: Request) {
     });
 
     try {
-      // Step 1: Submit job to Gradio API and get event ID
-      const submitResponse = await fetch(`${HF_API_URL}/gradio_api/call/infer`, {
+      // Convert base64 to buffer
+      const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+      const imageBuffer = Buffer.from(base64Data, "base64");
+
+      // Get style-specific prompt enhancement
+      const stylePrompt = STYLE_PROMPTS[loraAdapter] || "";
+      const fullPrompt = `${stylePrompt}. ${prompt}`.trim();
+
+      // Call HuggingFace Inference API with image data
+      const response = await fetch(HF_INFERENCE_API, {
         method: "POST",
         headers: {
+          "Authorization": `Bearer ${HF_TOKEN}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data: [
-            [image],  // images array
-            prompt,  // prompt string
-            loraAdapter || "Photo-to-Anime",  // lora_adapter
-            0,  // seed
-            true,  // randomize_seed
-            1.0,  // guidance_scale
-            4,  // steps
-          ],
+          inputs: {
+            image: base64Data,
+            prompt: fullPrompt,
+          },
+          parameters: {
+            num_inference_steps: 20,
+            guidance_scale: 7.5,
+          }
         }),
       });
 
-      if (!submitResponse.ok) {
+      if (!response.ok) {
         // Refund credit if API call fails
         await db.user.update({
           where: { id: session.user.id },
@@ -86,84 +107,25 @@ export async function POST(request: Request) {
           },
         });
 
-        const errorText = await submitResponse.text();
-        throw new Error(`HF Space API error: ${submitResponse.statusText} - ${errorText}`);
+        const errorText = await response.text();
+        console.error("HF API Error:", response.status, errorText);
+        throw new Error(`HuggingFace API error: ${response.statusText}`);
       }
 
-      const { event_id } = await submitResponse.json();
-
-      if (!event_id) {
-        // Refund credit if no event ID
-        await db.user.update({
-          where: { id: session.user.id },
-          data: {
-            imageCredits: {
-              increment: 1,
-            },
-          },
-        });
-
-        throw new Error("No event ID returned from API");
-      }
-
-      // Step 2: Poll for result using SSE
-      const sseResponse = await fetch(`${HF_API_URL}/gradio_api/call/infer/${event_id}`);
-
-      if (!sseResponse.ok) {
-        // Refund credit if SSE fails
-        await db.user.update({
-          where: { id: session.user.id },
-          data: {
-            imageCredits: {
-              increment: 1,
-            },
-          },
-        });
-
-        throw new Error(`Failed to get result: ${sseResponse.statusText}`);
-      }
-
-      // Parse SSE stream
-      const text = await sseResponse.text();
-      const lines = text.split('\n');
-
-      let resultData: any = null;
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          try {
-            const data = JSON.parse(line.substring(6));
-            if (data && Array.isArray(data) && data.length > 0) {
-              resultData = data;
-            }
-          } catch (e) {
-            // Skip invalid JSON lines
-          }
-        }
-      }
-
-      if (!resultData || !resultData[0]) {
-        // Refund credit if no valid result
-        await db.user.update({
-          where: { id: session.user.id },
-          data: {
-            imageCredits: {
-              increment: 1,
-            },
-          },
-        });
-
-        throw new Error("No valid output from API");
-      }
+      const resultBlob = await response.blob();
+      const resultBuffer = Buffer.from(await resultBlob.arrayBuffer());
+      const resultBase64 = `data:image/png;base64,${resultBuffer.toString("base64")}`;
 
       // Log the generation
       await db.accessLog.create({
         data: {
           userId: session.user.id,
           feature: "image_generation",
-          spaceId: HF_SPACE_ID,
+          spaceId: "inference-api",
           creditsUsed: 1,
           metadata: {
             prompt: prompt.substring(0, 100),
+            loraAdapter,
             timestamp: new Date().toISOString(),
           },
         },
@@ -171,10 +133,20 @@ export async function POST(request: Request) {
 
       return NextResponse.json({
         success: true,
-        image: resultData[0],  // First element is the generated image
+        image: resultBase64,
         creditsRemaining: updatedUser.imageCredits,
       });
     } catch (error) {
+      // Refund credit on error
+      await db.user.update({
+        where: { id: session.user.id },
+        data: {
+          imageCredits: {
+            increment: 1,
+          },
+        },
+      });
+
       console.error("Image generation error:", error);
       return NextResponse.json(
         {
