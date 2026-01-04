@@ -14,15 +14,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -39,27 +38,20 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?   // For email/password authentication
-  accounts      Account[]
-  sessions      Session[]
-
-  // Stripe fields
-  stripeCustomerId     String?   @unique
-
-  // Credit-based system for images
-  imageCredits  Int      @default(3)  // Start with 3 free credits
-  totalPurchased Int     @default(0)  // Track total credits purchased
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Access logs
-  accessLogs AccessLog[]
+  id               String      @id @default(cuid())
+  name             String?
+  email            String?     @unique
+  emailVerified    DateTime?
+  image            String?
+  stripeCustomerId String?     @unique
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  imageCredits     Int         @default(3)
+  totalPurchased   Int         @default(0)
+  password         String?
+  accessLogs       AccessLog[]
+  accounts         Account[]
+  sessions         Session[]
 }
 
 model VerificationToken {
@@ -71,14 +63,14 @@ model VerificationToken {
 }
 
 model AccessLog {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  feature   String
-  spaceId   String?
-  timestamp DateTime @default(now())
-  metadata  Json?
-  creditsUsed Int    @default(1)  // Track credits used per generation
+  id          String   @id @default(cuid())
+  userId      String
+  feature     String
+  spaceId     String?
+  timestamp   DateTime @default(now())
+  metadata    Json?
+  creditsUsed Int      @default(1)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([timestamp])
@@ -88,7 +80,7 @@ model Purchase {
   id              String   @id @default(cuid())
   userId          String
   stripePaymentId String   @unique
-  bundleType      String   // 'single', 'starter', 'creator', 'professional'
+  bundleType      String
   creditsAdded    Int
   amountPaid      Float
   createdAt       DateTime @default(now())
