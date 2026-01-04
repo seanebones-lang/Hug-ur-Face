@@ -9,75 +9,40 @@ import Link from "next/link";
 export default function GeneratePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [prompt, setPrompt] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [creditsRemaining, setCreditsRemaining] = useState<number | null>(
     session?.user?.imageCredits ?? null
   );
-  const [loraAdapter, setLoraAdapter] = useState("Photo-to-Anime");
+  const [canUseSpace, setCanUseSpace] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleGenerate = async () => {
+  const handleUnlockGenerator = async () => {
     if (!session) {
       router.push("/auth/signin");
       return;
     }
 
-    if (!imageFile || !prompt.trim()) {
-      setError("Please upload an image and enter a prompt");
-      return;
-    }
-
     setLoading(true);
     setError(null);
-    setGeneratedImage(null);
 
     try {
-      // Convert image to base64
-      const base64Image = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(imageFile);
-      });
-
-      const response = await fetch("/api/generate", {
+      const response = await fetch("/api/start-generation", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          image: base64Image,
-          prompt: prompt.trim(),
-          loraAdapter: loraAdapter,
-        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || data.message || "Generation failed");
+        throw new Error(data.error || data.message || "Failed to unlock generator");
       }
 
-      setGeneratedImage(data.image);
       setCreditsRemaining(data.creditsRemaining);
+      setCanUseSpace(true);
 
-      // Update session to reflect new credit count
+      // Update session
       if (session?.user) {
         session.user.imageCredits = data.creditsRemaining;
       }
@@ -140,32 +105,63 @@ export default function GeneratePage() {
             </div>
           </div>
 
-          {/* Embed HuggingFace Space directly - THIS WORKS NOW */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4">
-            <div className="mb-4 text-center text-sm text-gray-600 dark:text-gray-400">
-              Powered by Qwen Image Editor on HuggingFace
-            </div>
-            <iframe
-              src="https://bizbots-qwen-image-editor.hf.space"
-              frameBorder="0"
-              width="100%"
-              height="900"
-              className="rounded-lg"
-            ></iframe>
-          </div>
+          {/* Generator Access Control */}
+          {!canUseSpace ? (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                Ready to Transform Your Images?
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+                Click below to unlock the AI Image Editor. You'll be able to upload images, choose from 7 different styles (Photo-to-Anime, Upscaler, Style Transfer, and more), and generate unlimited edits during this session.
+              </p>
 
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Each generation uses 1 credit. {(creditsRemaining === 0 || session.user?.imageCredits === 0) && (
-                <Link
-                  href="/pricing"
-                  className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline ml-2"
-                >
-                  Buy more credits
-                </Link>
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+                </div>
               )}
-            </p>
-          </div>
+
+              <button
+                onClick={handleUnlockGenerator}
+                disabled={loading || (session.user?.imageCredits === 0 && creditsRemaining === 0)}
+                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105"
+              >
+                {loading ? "Unlocking..." : "Unlock Generator (1 Credit)"}
+              </button>
+
+              {(creditsRemaining === 0 || session.user?.imageCredits === 0) && (
+                <div className="mt-6">
+                  <Link
+                    href="/pricing"
+                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline font-medium"
+                  >
+                    Purchase Credits →
+                  </Link>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4">
+              <div className="mb-4 flex justify-between items-center">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Powered by Qwen Image Editor • Credits remaining: {creditsRemaining}
+                </span>
+                <span className="px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full text-sm font-semibold">
+                  ✓ Unlocked
+                </span>
+              </div>
+              <iframe
+                src="https://bizbots-qwen-image-editor.hf.space"
+                frameBorder="0"
+                width="100%"
+                height="900"
+                className="rounded-lg border-2 border-green-500"
+              ></iframe>
+              <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                You can generate multiple images during this session
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
