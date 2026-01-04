@@ -49,39 +49,41 @@ export default function GeneratePage() {
 
     try {
       // Convert image to base64
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64Image = reader.result as string;
+      const base64Image = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(imageFile);
+      });
 
-        const response = await fetch("/api/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            image: base64Image,
-            prompt: prompt.trim(),
-            loraAdapter: loraAdapter,
-          }),
-        });
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image: base64Image,
+          prompt: prompt.trim(),
+          loraAdapter: loraAdapter,
+        }),
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (!response.ok) {
-          throw new Error(data.error || data.message || "Generation failed");
-        }
+      if (!response.ok) {
+        throw new Error(data.error || data.message || "Generation failed");
+      }
 
-        setGeneratedImage(data.image);
-        setCreditsRemaining(data.creditsRemaining);
+      setGeneratedImage(data.image);
+      setCreditsRemaining(data.creditsRemaining);
 
-        // Update session to reflect new credit count
-        if (session?.user) {
-          session.user.imageCredits = data.creditsRemaining;
-        }
-      };
-      reader.readAsDataURL(imageFile);
+      // Update session to reflect new credit count
+      if (session?.user) {
+        session.user.imageCredits = data.creditsRemaining;
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
+      setLoading(false);
     } finally {
       setLoading(false);
     }
