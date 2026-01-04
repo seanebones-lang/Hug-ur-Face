@@ -326,184 +326,200 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
-                <div className="text-3xl mb-3">✏️</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Manga Artists</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                   Transform photo references into manga panels with authentic screen tones and line art
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-                <div className="text-3xl mb-3">🎬</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Animators</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                   Create character turnarounds, generate pose variations, develop style frames from live action
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-800">
-                <div className="text-3xl mb-3">🎮</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                  </svg>
+                </div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Game Developers</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                   Generate character concept art, create texture variations, produce 360° asset views
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
-                <div className="text-3xl mb-3">🏪</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                </div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">E-commerce Sellers</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                   Showcase products in multiple colors/materials without reshooting, generate angle variations
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-xl border border-red-200 dark:border-red-800">
-                <div className="text-3xl mb-3">👗</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Fashion Designers</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Visualize garments in different poses, create lookbooks, test color palettes instantly
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl border border-violet-200 dark:border-violet-800">
-                <div className="text-3xl mb-3">📸</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Photographers</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Upscale to 4K for prints, relight photos post-shoot, offer creative anime-style portraits
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-xl border border-cyan-200 dark:border-cyan-800">
-                <div className="text-3xl mb-3">🏗️</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Product Designers</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Replace materials (wood→metal), generate finish options, create client presentation mockups
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-teal-50 to-green-50 dark:from-teal-900/20 dark:to-green-900/20 rounded-xl border border-teal-200 dark:border-teal-800">
-                <div className="text-3xl mb-3">📱</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Social Media Managers</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Create eye-catching content, generate thumbnail variations, apply consistent visual styles
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-xl border border-yellow-200 dark:border-yellow-800">
-                <div className="text-3xl mb-3">📚</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Comic Artists</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Convert photo refs to comic book style, generate panel variations, create character sheets
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-lime-50 to-green-50 dark:from-lime-900/20 dark:to-green-900/20 rounded-xl border border-lime-200 dark:border-lime-800">
-                <div className="text-3xl mb-3">🎭</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Concept Artists</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Explore character designs, generate pose variations, create environment mood boards
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl border border-orange-200 dark:border-orange-800">
-                <div className="text-3xl mb-3">🖼️</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Fine Artists</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Explore compositional ideas, test different artistic styles, create digital studies
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-fuchsia-50 to-pink-50 dark:from-fuchsia-900/20 dark:to-pink-900/20 rounded-xl border border-fuchsia-200 dark:border-fuchsia-800">
-                <div className="text-3xl mb-3">🎥</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Video Producers</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Create YouTube thumbnails, enhance video stills, generate promotional artwork
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-xl border border-sky-200 dark:border-sky-800">
-                <div className="text-3xl mb-3">🏢</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Marketing Teams</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Generate campaign visuals, A/B test different styles, create localized content variations
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl border border-indigo-200 dark:border-indigo-800">
-                <div className="text-3xl mb-3">📖</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Book Publishers</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Create cover art concepts, generate character illustrations, produce interior artwork
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-rose-50 to-red-50 dark:from-rose-900/20 dark:to-red-900/20 rounded-xl border border-rose-200 dark:border-rose-800">
-                <div className="text-3xl mb-3">🎪</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Event Planners</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Create event visuals, generate promotional materials, produce venue mockups
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
-                <div className="text-3xl mb-3">🏋️</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Fitness Coaches</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Create exercise demonstration images, generate pose variations for form guides
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-900/20 dark:to-gray-900/20 rounded-xl border border-slate-200 dark:border-slate-800">
-                <div className="text-3xl mb-3">🏛️</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Architects</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Visualize material options, create presentation renders, generate lighting studies
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-pink-50 to-fuchsia-50 dark:from-pink-900/20 dark:to-fuchsia-900/20 rounded-xl border border-pink-200 dark:border-pink-800">
-                <div className="text-3xl mb-3">💅</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Beauty Professionals</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Create before/after mockups, visualize makeup looks, generate portfolio pieces
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-                <div className="text-3xl mb-3">🎓</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Educators</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Create educational visuals, generate course materials, produce engaging content
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-violet-50 to-pink-50 dark:from-violet-900/20 dark:to-pink-900/20 rounded-xl border border-violet-200 dark:border-violet-800">
-                <div className="text-3xl mb-3">🎸</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Musicians</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Create album covers, generate promotional artwork, design merch graphics
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-900/20 dark:to-teal-900/20 rounded-xl border border-cyan-200 dark:border-cyan-800">
-                <div className="text-3xl mb-3">🌐</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Web Designers</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Create hero images, generate icon variations, produce background artwork
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
-                <div className="text-3xl mb-3">📰</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Journalists</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Enhance story images, create compelling feature visuals, upscale archived photos
                 </p>
               </div>
 
-              <div className="p-5 bg-gradient-to-br from-green-50 to-lime-50 dark:from-green-900/20 dark:to-lime-900/20 rounded-xl border border-green-200 dark:border-green-800">
-                <div className="text-3xl mb-3">🛍️</div>
+              <div className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all hover:shadow-lg">
+                <div className="w-10 h-10 mb-4 text-indigo-600 dark:text-indigo-400"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg></div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Dropshippers</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Create unique product listings, enhance supplier photos, generate lifestyle mockups
