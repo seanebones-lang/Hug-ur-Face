@@ -46,9 +46,7 @@ export default async function PricingPage() {
                 priceId={bundle.priceId ?? null}
                 features={bundle.features}
                 planKey={key}
-                isCurrentPlan={false}
                 credits={bundle.credits}
-                pricePerImage={bundle.pricePerImage}
                 popular={bundle.popular}
               />
             ))}

@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-11-20.acacia",
+  apiVersion: "2025-02-24.acacia",
   typescript: true,
 });
 
@@ -20,6 +20,7 @@ export const BUNDLES = {
       "Full quality output",
       "No commitment",
     ],
+    popular: false,
   },
   STARTER: {
     id: "starter",
@@ -72,7 +73,7 @@ export const BUNDLES = {
     ],
     popular: false,
   },
-} as const;
+};
 
 export type BundleKey = keyof typeof BUNDLES;
 
