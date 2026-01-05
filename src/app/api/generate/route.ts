@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { generateRateLimit } from "@/lib/ratelimit";
+import { logGeneration } from "@/lib/logger";
 
 const HF_TOKEN = process.env.HF_TOKEN;
 const HF_SPACE_ID = process.env.HF_SPACE_ID || "bizbots/qwen-image-editor";
@@ -25,6 +27,17 @@ export async function POST(request: Request) {
         error: "Unauthorized",
         details: "Please sign in to generate images"
       }, { status: 401 });
+    }
+
+    // Rate limit generations (10 per minute per user)
+    if (generateRateLimit) {
+      const { success } = await generateRateLimit.limit(session.user.id);
+      if (!success) {
+        return NextResponse.json(
+          { error: "Rate limit exceeded. Please wait a moment before generating again." },
+          { status: 429 }
+        );
+      }
     }
 
     // Get user's current credits
@@ -58,6 +71,9 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    logGeneration.start(session.user.id, prompt);
+    const startTime = Date.now();
 
     // Deduct 1 credit BEFORE generation (to prevent abuse)
     const updatedUser = await db.user.update({
@@ -183,6 +199,9 @@ export async function POST(request: Request) {
         },
       });
 
+      const durationMs = Date.now() - startTime;
+      logGeneration.success(session.user.id, durationMs);
+
       return NextResponse.json({
         success: true,
         image: resultBase64,
@@ -190,6 +209,8 @@ export async function POST(request: Request) {
       });
     } catch (error) {
       // Refund credit on error
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logGeneration.error(session.user.id, errorMessage);
       await db.user.update({
         where: { id: session.user.id },
         data: {

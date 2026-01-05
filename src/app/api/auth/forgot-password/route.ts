@@ -1,10 +1,27 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { sendPasswordResetEmail } from "@/lib/email";
+import { authRateLimit } from "@/lib/ratelimit";
+import { getClientIp } from "@/lib/ip";
+import { logAuth } from "@/lib/logger";
 import crypto from "crypto";
 
 export async function POST(request: Request) {
   try {
     const { email } = await request.json();
+
+    // Rate limit forgot password attempts (5 per 10 minutes per IP)
+    if (authRateLimit) {
+      const ipAddress = await getClientIp();
+      const { success } = await authRateLimit.limit(ipAddress);
+
+      if (!success) {
+        return NextResponse.json(
+          { error: "Too many password reset requests. Please try again in 10 minutes." },
+          { status: 429 }
+        );
+      }
+    }
 
     if (!email) {
       return NextResponse.json(
@@ -38,16 +55,20 @@ export async function POST(request: Request) {
       },
     });
 
-    // TODO: Send email with reset link
-    // For now, just log it (in production, use SendGrid, Resend, etc.)
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://pic.mothership-ai.com'}/auth/reset-password?token=${resetToken}`;
-    console.log(`Password reset link for ${email}: ${resetUrl}`);
+    // Send password reset email
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://pic.mothership-ai.com';
+    const emailResult = await sendPasswordResetEmail(email, resetToken, baseUrl);
+
+    if (!emailResult.success) {
+      console.error("Failed to send password reset email:", emailResult.error);
+      // Still return success to prevent email enumeration
+    }
+
+    logAuth.passwordReset(email);
 
     return NextResponse.json({
       success: true,
       message: "If an account exists with that email, you will receive a password reset link.",
-      // Remove this in production - only for testing
-      ...(process.env.NODE_ENV === 'development' && { resetUrl }),
     });
   } catch (error) {
     console.error("Forgot password error:", error);

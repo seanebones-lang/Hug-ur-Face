@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/lib/db";
+import { logPayment } from "@/lib/logger";
 
 export async function POST(request: Request) {
   const body = await request.text();
@@ -96,5 +97,6 @@ async function handlePaymentCompleted(session: Stripe.Checkout.Session) {
     },
   });
 
+  logPayment.success(userId, bundleType, credits);
   console.log(`User ${userId} purchased ${credits} credits (${bundleType} bundle). New balance: ${user.imageCredits}`);
 }

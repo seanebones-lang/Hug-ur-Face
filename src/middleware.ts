@@ -5,7 +5,7 @@ export default auth((req) => {
   const { pathname } = req.nextUrl;
 
   // Protected routes that require authentication
-  const protectedRoutes = ["/dashboard", "/settings"];
+  const protectedRoutes = ["/dashboard", "/settings", "/generate"];
 
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)

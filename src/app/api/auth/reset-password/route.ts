@@ -1,10 +1,26 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { authRateLimit } from "@/lib/ratelimit";
+import { getClientIp } from "@/lib/ip";
+import { validatePassword } from "@/lib/password";
 import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
   try {
     const { token, password } = await request.json();
+
+    // Rate limit password reset attempts (5 per 10 minutes per IP)
+    if (authRateLimit) {
+      const ipAddress = await getClientIp();
+      const { success } = await authRateLimit.limit(ipAddress);
+
+      if (!success) {
+        return NextResponse.json(
+          { error: "Too many password reset attempts. Please try again in 10 minutes." },
+          { status: 429 }
+        );
+      }
+    }
 
     if (!token || !password) {
       return NextResponse.json(
@@ -13,9 +29,11 @@ export async function POST(request: Request) {
       );
     }
 
-    if (password.length < 6) {
+    // Validate password strength
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
       return NextResponse.json(
-        { error: "Password must be at least 6 characters" },
+        { error: passwordValidation.error },
         { status: 400 }
       );
     }

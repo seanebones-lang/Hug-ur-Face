@@ -557,7 +557,35 @@ export default function HomePage() {
       <footer className="py-8 px-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto text-center text-gray-600 dark:text-gray-400">
           <p className="text-lg font-semibold mb-2">&copy; 2026 NextEleven AI. All rights reserved.</p>
-          <p className="text-sm">Proprietary AI Technology • 9 Advanced AI Editing Modes</p>
+          <p className="text-sm mb-4">Proprietary AI Technology • 9 Advanced AI Editing Modes</p>
+
+          {/* Legal Links */}
+          <div className="flex flex-wrap justify-center gap-4 mb-4 text-sm">
+            <Link href="/privacy" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+              Privacy Policy
+            </Link>
+            <span className="text-gray-300 dark:text-gray-700">•</span>
+            <Link href="/terms" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+              Terms of Service
+            </Link>
+            <span className="text-gray-300 dark:text-gray-700">•</span>
+            <Link href="/acceptable-use" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+              Acceptable Use
+            </Link>
+            <span className="text-gray-300 dark:text-gray-700">•</span>
+            <Link href="/disclaimer" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+              Disclaimer
+            </Link>
+          </div>
+
+          {/* Service Availability Disclaimer */}
+          <div className="max-w-3xl mx-auto mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+            <p className="text-xs text-yellow-800 dark:text-yellow-200">
+              <strong>Service Availability Notice:</strong> During periods of high demand, users may experience wait times or, in rare cases, temporary service interruptions.
+              While we strive to maintain 24/7 availability and continuously optimize our infrastructure, the computational resources required for advanced AI processing
+              and the popularity of our platform mean we cannot guarantee 100% uptime. We appreciate your patience and understanding as we work to provide the best possible experience.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
