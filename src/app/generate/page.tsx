@@ -172,7 +172,7 @@ export default function GeneratePage() {
                 </span>
               </div>
               <iframe
-                src="https://bizbots-nexteleven-image-editor.hf.space"
+                src="https://bizbots-qwen-image-editor.hf.space"
                 frameBorder="0"
                 width="100%"
                 height="1000"

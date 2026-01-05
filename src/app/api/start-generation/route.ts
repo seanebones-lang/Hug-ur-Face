@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       data: {
         userId: session.user.id,
         feature: "image_generation",
-        spaceId: process.env.HF_SPACE_ID || "bizbots/nexteleven-image-editor",
+        spaceId: process.env.HF_SPACE_ID || "bizbots/qwen-image-editor",
         creditsUsed: 1,
         metadata: {
           timestamp: new Date().toISOString(),
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       creditsRemaining: updatedUser.imageCredits,
-      redirectUrl: "https://bizbots-nexteleven-image-editor.hf.space",
+      redirectUrl: "https://bizbots-qwen-image-editor.hf.space",
     });
   } catch (error) {
     console.error("Start generation error:", error);

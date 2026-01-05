@@ -3,8 +3,8 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 const HF_TOKEN = process.env.HF_TOKEN;
-const HF_SPACE_ID = process.env.HF_SPACE_ID || "bizbots/nexteleven-image-editor";
-const HF_SPACE_URL = `https://bizbots-nexteleven-image-editor.hf.space`;
+const HF_SPACE_ID = process.env.HF_SPACE_ID || "bizbots/qwen-image-editor";
+const HF_SPACE_URL = `https://bizbots-qwen-image-editor.hf.space`;
 
 export const maxDuration = 120; // Allow 120 seconds for generation
 
@@ -173,7 +173,7 @@ export async function POST(request: Request) {
         data: {
           userId: session.user.id,
           feature: "image_generation",
-          spaceId: "nexteleven-image-editor",
+          spaceId: "qwen-image-editor",
           creditsUsed: 1,
           metadata: {
             prompt: prompt.substring(0, 100),
